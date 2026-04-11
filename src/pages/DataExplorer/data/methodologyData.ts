@@ -31,6 +31,7 @@ export interface DivisionResult {
   channels: Record<ChannelKey, ChannelSnapshot>;
 }
 
+// Rounds a number to a given decimal precision to keep derived display values clean.
 const round = (value: number, digits = 1) => Number(value.toFixed(digits));
 
 export const channelOrder: ChannelKey[] = ["Google", "Email", "Facebook", "Affiliate"];
@@ -246,11 +247,13 @@ export const divisionResults: DivisionResult[] = [
   },
 ];
 
+// Mean R² across the top divisions — surfaced as a credibility metric in the hero section.
 export const averageTopDivisionR2 = round(
   divisionResults.reduce((sum, result) => sum + result.r2, 0) / divisionResults.length,
   3,
 );
 
+// Count of top-6 divisions where Affiliate's coefficient is negative — used in the hero chip.
 export const affiliateNegativeCount = divisionResults.filter(
   (result) => result.channels.Affiliate.coefficient < 0,
 ).length;
@@ -278,6 +281,7 @@ export const notebookHighlights: MetricCard[] = [
   },
 ];
 
+// Aggregates per-channel stats across all divisions to power the summary charts.
 const channelSummary = channelOrder.map((channel) => {
   const totalVolumeM = round(
     divisionResults.reduce((sum, result) => sum + result.channels[channel].volumeM, 0),
@@ -302,11 +306,13 @@ const channelSummary = channelOrder.map((channel) => {
   };
 });
 
+// Converts raw R² ratios to percentage points for the horizontal bar chart.
 export const r2Leaderboard = divisionResults.map((result) => ({
   division: result.division,
   r2Percent: round(result.r2 * 100, 1),
 }));
 
+// Converts per-channel average coefficients to K-units for the vertical bar chart.
 export const coefficientLeaderboard = channelSummary.map((summary) => ({
   channel: summary.channel,
   averageCoefficientK: round(summary.averageCoefficient / 1000, 1),

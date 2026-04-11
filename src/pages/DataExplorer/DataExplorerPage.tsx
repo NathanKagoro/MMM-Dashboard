@@ -38,6 +38,7 @@ import {
 } from "./data/methodologyData";
 import AnimatedBackground from "./AnimatedBackground";
 
+// Returns Framer Motion props for a fade-in-up entrance triggered at scroll-into-view.
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
@@ -45,15 +46,18 @@ const fadeUp = (delay = 0) => ({
   transition: { duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] as const },
 });
 
+// Values >= 10M get one decimal place; smaller values get two to preserve legibility.
 function formatMillions(value: number) {
   return value >= 10 ? `${value.toFixed(1)}M` : `${value.toFixed(2)}M`;
 }
 
+// Converts a raw coefficient to a signed "K" string (e.g. -19.4K) for compact display.
 function formatCoefficient(value: number) {
   const sign = value < 0 ? "-" : "";
   return `${sign}${Math.abs(value / 1000).toFixed(1)}K`;
 }
 
+// Recharts can pass an array for stacked series — unwrap it before formatting.
 function formatTooltipNumber(
   value: number | string | readonly (number | string)[] | undefined,
   suffix: string,
@@ -109,6 +113,7 @@ export default function DataExplorerPage() {
     [selectedDivision],
   );
 
+  // Derives chart-ready volume entries for the selected division, in canonical channel order.
   const selectedVolumeData = useMemo(
     () =>
       channelOrder.map((channel) => ({
@@ -119,6 +124,7 @@ export default function DataExplorerPage() {
     [selectedResult],
   );
 
+  // Sorted by absolute coefficient so the strongest effect always appears first.
   const selectedCoefficientData = useMemo(
     () =>
       channelOrder
@@ -132,6 +138,7 @@ export default function DataExplorerPage() {
     [selectedResult],
   );
 
+  // Used to scale each channel's bar relative to the largest coefficient in this division.
   const maxSelectedCoefficient = Math.max(
     ...selectedCoefficientData.map((entry) => Math.abs(entry.value)),
   );
@@ -386,6 +393,7 @@ export default function DataExplorerPage() {
                     <div className="mt-4 space-y-4">
                       {selectedVolumeData.map((entry) => {
                         const maxVolume = Math.max(...selectedVolumeData.map((item) => item.value));
+                        // Width as a percentage of the largest channel volume in this division.
                         const width = (entry.value / maxVolume) * 100;
 
                         return (
@@ -419,6 +427,7 @@ export default function DataExplorerPage() {
                               <span>{formatCoefficient(entry.value)}</span>
                             </div>
                             <div className="h-3 rounded-full bg-[#EFE8FF]">
+                              {/* Negative coefficients render in soft red to flag drag channels. */}
                               <div
                                 className="h-full rounded-full"
                                 style={{ width: `${width}%`, backgroundColor: entry.value < 0 ? "#F39AA7" : entry.color }}
@@ -438,7 +447,7 @@ export default function DataExplorerPage() {
             <SectionTitle
               eyebrow="Guardrails"
               title="Limits and next actions"
-              description="The notebook is directionally useful, but still better suited to prioritization than causal proof."
+              description="These results are reliable enough to guide budget priorities, but the model has real structural limits that matter before it drives operating decisions."
             />
 
             <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_0.95fr]">
