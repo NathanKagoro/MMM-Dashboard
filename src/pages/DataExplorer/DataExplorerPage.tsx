@@ -36,7 +36,7 @@ import {
   processSteps,
   r2Leaderboard,
 } from "./data/methodologyData";
-import AnimatedBackground from "./AnimatedBackground";
+import AnimatedBackground from "../../components/AnimatedBackground";
 
 // Returns Framer Motion props for a fade-in-up entrance triggered at scroll-into-view.
 const fadeUp = (delay = 0) => ({

@@ -1,6 +1,6 @@
 import { motion, useMotionValue, animate } from "framer-motion";
 import { useEffect, useRef } from "react";
-import { overviewCards } from "../../data/fakedata";
+import { overviewCards } from "../../data/overviewData";
 
 type Card = {
   id: number;

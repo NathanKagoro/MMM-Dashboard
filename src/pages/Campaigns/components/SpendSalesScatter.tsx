@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
-import { campaignScatterData } from "./fakedata";
+import { campaignScatterData } from "../data/campaignData";
 
 const WIDTH = 1000;
 const HEIGHT = 380;

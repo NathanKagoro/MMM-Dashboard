@@ -1,4 +1,4 @@
-import AnimatedBackground from "./AnimatedBackground";
+import AnimatedBackground from "../../components/AnimatedBackground";
 import CardCarousel from "./components/carousel/CardCarousel";
 import MainTrendChart from "./components/MainTrendChart";
 import CampaignHeatmap from "./components/CampaignHeatmap";

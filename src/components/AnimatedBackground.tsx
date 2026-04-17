@@ -3,12 +3,11 @@ import { motion } from "framer-motion";
 export default function AnimatedBackground() {
   return (
     <motion.div
-      className="absolute inset-0 z-0"
+      className="fixed inset-0 z-0"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 2 }}
     >
-      {/* Original 3 blobs */}
       <motion.div
         className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-[#CAADFF] blur-[120px]"
         animate={{ x: [0, 100, 0], y: [0, 80, 0] }}
@@ -24,8 +23,6 @@ export default function AnimatedBackground() {
         animate={{ x: [0, 80, 0], y: [0, -90, 0] }}
         transition={{ duration: 50, repeat: Infinity, ease: "easeInOut" }}
       />
-
-      {/* Extra blobs for more density */}
       <motion.div
         className="absolute top-10 left-1/2 h-[400px] w-[400px] rounded-full bg-[#7D71A7] blur-[100px]"
         animate={{ x: [0, 60, 0], y: [0, 70, 0] }}

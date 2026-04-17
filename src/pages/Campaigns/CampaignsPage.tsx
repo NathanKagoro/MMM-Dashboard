@@ -1,8 +1,8 @@
-import AnimatedBackground from "./AnimatedBackground";
-import CampaignSelector from "./CampaignSelector";
-import SpendSalesScatter from "./SpendSalesScatter";
-import CampaignTable from "./CampaignTable";
-import { channelTableData, campaignInsights } from "./fakedata"; 
+import AnimatedBackground from "../../components/AnimatedBackground";
+import CampaignSelector from "./components/CampaignSelector";
+import SpendSalesScatter from "./components/SpendSalesScatter";
+import CampaignTable from "./components/CampaignTable";
+import { channelTableData, campaignInsights } from "./data/campaignData";
 
 import { useState } from "react";
 

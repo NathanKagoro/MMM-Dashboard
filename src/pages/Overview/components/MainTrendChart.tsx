@@ -1,4 +1,4 @@
-import { timeSeriesData } from "../data/fakedata";
+import { timeSeriesData } from "../data/overviewData";
 import {
   LineChart,
   Line,

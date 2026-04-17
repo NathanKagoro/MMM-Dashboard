@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { heatmapData, heatColor } from "../data/fakedata";
+import { heatmapData, heatColor } from "../data/overviewData";
 
 const divisions = ["Y", "D", "H", "I", "M", "Q"];
 const channels = ["Google", "Email", "Facebook", "Affiliate"];

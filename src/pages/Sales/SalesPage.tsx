@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import AnimatedBackground from "./AnimatedBackground";
+import AnimatedBackground from "../../components/AnimatedBackground";
 import { useState } from "react";
 import {
   BarChart,
@@ -20,7 +20,7 @@ import {
   modelFitData,
   contributionData,
   recommendations,
-} from "./data/fakedata";
+} from "./data/salesData";
 
 export default function SalesPage() {
   const [activeRec, setActiveRec] = useState(0);
