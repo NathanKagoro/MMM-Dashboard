@@ -1,500 +1,228 @@
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { Sigma, TriangleAlert, Target } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Card, DivisionPicker, Page, PageHeader } from "../../components/ui/Page";
+import { AXIS_LINE, AXIS_TICK, GRID_STROKE, Swatch, TooltipBox } from "../../components/charts/ChartParts";
+import { CHANNELS, CHANNEL_COLORS, DIVISIONS, doublingEffect, getDivision, meanR2, model } from "../../data/model";
+import { formatCompact, formatR2, formatSignedCurrency, niceTicks } from "../../lib/format";
+import { PERIOD_LABEL } from "../../data/period";
 import {
-  Activity,
-  ArrowRight,
-  DatabaseZap,
-  Sigma,
-  Sparkles,
-  Target,
-  Trophy,
-  TriangleAlert,
-} from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import {
-  affiliateNegativeCount,
-  averageTopDivisionR2,
-  channelColors,
-  channelOrder,
-  coefficientLeaderboard,
-  divisionResults,
-  engineeredFeatures,
+  divisionNarrative,
   modelEquation,
+  modelInterpretation,
   modelingLimitations,
   nextActions,
-  notebookHighlights,
-  notebookTakeaways,
   processSteps,
-  r2Leaderboard,
+  takeaways,
 } from "./data/methodologyData";
-import AnimatedBackground from "../../components/AnimatedBackground";
 
-// Returns Framer Motion props for a fade-in-up entrance triggered at scroll-into-view.
-const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.2 },
-  transition: { duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] as const },
-});
-
-// Values >= 10M get one decimal place; smaller values get two to preserve legibility.
-function formatMillions(value: number) {
-  return value >= 10 ? `${value.toFixed(1)}M` : `${value.toFixed(2)}M`;
-}
-
-// Converts a raw coefficient to a signed "K" string (e.g. -19.4K) for compact display.
-function formatCoefficient(value: number) {
-  const sign = value < 0 ? "-" : "";
-  return `${sign}${Math.abs(value / 1000).toFixed(1)}K`;
-}
-
-// Recharts can pass an array for stacked series — unwrap it before formatting.
-function formatTooltipNumber(
-  value: number | string | readonly (number | string)[] | undefined,
-  suffix: string,
-) {
-  const normalizedValue = Array.isArray(value) ? value[0] : value;
-
-  if (typeof normalizedValue !== "number") {
-    return `0${suffix}`;
-  }
-
-  return `${normalizedValue.toFixed(1)}${suffix}`;
-}
-
-function GlassCard({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`rounded-[28px] border border-white/50 bg-white/70 p-6 shadow-xl backdrop-blur-md ${className}`}>
-      {children}
-    </div>
-  );
-}
-
-function SectionTitle({
-  eyebrow,
-  title,
-  description,
-}: {
-  eyebrow: string;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="max-w-3xl">
-      <div className="mb-2 text-xs font-bold uppercase tracking-[0.35em] text-[#7D71A7]/70">
-        {eyebrow}
-      </div>
-      <h2 className="text-3xl font-bold text-[#7D71A7] md:text-4xl">{title}</h2>
-      <p className="mt-3 text-sm leading-7 text-[#5B507D] md:text-base">{description}</p>
-    </div>
-  );
-}
+const topSet = new Set(DIVISIONS);
+const r2Data = model.allDivisionR2.map((d) => ({ ...d, top: topSet.has(d.division) }));
+const r2Ticks = niceTicks(0, Math.max(...r2Data.map((d) => d.r2)), 5);
 
 export default function DataExplorerPage() {
-  const [selectedDivision, setSelectedDivision] = useState(divisionResults[0].division);
-
-  const selectedResult = useMemo(
-    () => divisionResults.find((result) => result.division === selectedDivision) ?? divisionResults[0],
-    [selectedDivision],
-  );
-
-  // Derives chart-ready volume entries for the selected division, in canonical channel order.
-  const selectedVolumeData = useMemo(
-    () =>
-      channelOrder.map((channel) => ({
-        channel,
-        value: selectedResult.channels[channel].volumeM,
-        color: channelColors[channel],
-      })),
-    [selectedResult],
-  );
-
-  // Sorted by absolute coefficient so the strongest effect always appears first.
-  const selectedCoefficientData = useMemo(
-    () =>
-      channelOrder
-        .map((channel) => ({
-          channel,
-          value: selectedResult.channels[channel].coefficient,
-          absoluteValue: Math.abs(selectedResult.channels[channel].coefficient),
-          color: channelColors[channel],
-        }))
-        .sort((left, right) => right.absoluteValue - left.absoluteValue),
-    [selectedResult],
-  );
-
-  // Used to scale each channel's bar relative to the largest coefficient in this division.
-  const maxSelectedCoefficient = Math.max(
-    ...selectedCoefficientData.map((entry) => Math.abs(entry.value)),
-  );
+  const [selected, setSelected] = useState(DIVISIONS[0]);
+  const division = getDivision(selected);
+  const story = useMemo(() => divisionNarrative(division), [division]);
+  const maxVolume = Math.max(...CHANNELS.map((c) => division.channels[c].impressions));
+  const maxEffect = Math.max(...CHANNELS.map((c) => Math.abs(doublingEffect(division.channels[c].coefficient))));
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#FCF6D9]/20">
-        <AnimatedBackground />
+    <Page>
+      <PageHeader
+        eyebrow="Data & methodology"
+        title="How the numbers are made"
+        lead={`Every figure in this dashboard is re-derived from one CSV: ${model.rows.toLocaleString("en-GB")} weekly rows, ${model.divisionCount} divisions, ${PERIOD_LABEL}.`}
+      />
 
-        <div className="relative z-10 mx-auto flex w-full max-w-[1450px] flex-col gap-12 px-6 pb-20 pt-10 md:px-10 lg:px-16 lg:pt-14">
-          <motion.section {...fadeUp()}>
-            <div className="grid gap-8 xl:grid-cols-[1.3fr_0.9fr]">
-              <GlassCard className="overflow-hidden p-0">
-                <div className="relative h-full bg-[linear-gradient(135deg,rgba(125,113,167,0.16),rgba(255,194,226,0.18),rgba(252,246,217,0.55))] p-8 md:p-10">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#7D71A7]">
-                    <DatabaseZap className="h-4 w-4" />
-                    Notebook-to-dashboard walkthrough
-                  </div>
-                  <h1 className="mt-6 max-w-4xl text-4xl font-extrabold leading-tight text-[#7D71A7] md:text-6xl">
-                    How the MMM notebook produced the recommendations you see across the dashboard.
-                  </h1>
-                  <p className="mt-6 max-w-3xl text-base leading-8 text-[#5B507D] md:text-lg">
-                    This page turns the saved outputs from the notebook into a narrative: how the data was cleaned,
-                    how the model was engineered, what made the top divisions trustworthy, and why Email, Facebook,
-                    Google, and Affiliate ended up with very different strategic roles.
-                  </p>
+      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          { k: "Rows", v: model.rows.toLocaleString("en-GB"), n: `${model.divisionCount} divisions × ${model.period.weeks} weeks` },
+          { k: "Divisions modelled", v: `${DIVISIONS.length}`, n: "Highest in-sample R²" },
+          { k: "Mean R²", v: formatR2(meanR2()), n: `Top ${DIVISIONS.length}; all ${model.divisionCount}: ${formatR2(model.allDivisionR2.reduce((s, d) => s + d.r2, 0) / model.allDivisionR2.length)}` },
+          { k: "Spend data", v: "None", n: "So ROI is not reported" },
+        ].map((x) => (
+          <div key={x.k} className="card !p-4">
+            <dt className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-muted">{x.k}</dt>
+            <dd className="num mt-1 text-2xl font-bold text-ink">{x.v}</dd>
+            <dd className="mt-0.5 text-xs text-ink-muted">{x.n}</dd>
+          </div>
+        ))}
+      </dl>
 
-                  <div className="mt-8 flex flex-wrap gap-3">
-                    {[
-                      "Regression-based MMM",
-                      `${(averageTopDivisionR2 * 100).toFixed(1)}% average R² on the top six divisions`,
-                      `${affiliateNegativeCount} divisions with negative Affiliate effect`,
-                    ].map((chip) => (
-                      <span
-                        key={chip}
-                        className="rounded-full border border-white/60 bg-white/75 px-4 py-2 text-sm font-medium text-[#675A8F] shadow-sm"
-                      >
-                        {chip}
-                      </span>
+      <section className="flex flex-col gap-4">
+        <h2 className="text-title font-bold text-ink">Method</h2>
+        <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {processSteps.map((s) => (
+            <li key={s.eyebrow} className="card !p-5">
+              <span className="eyebrow">Step {s.eyebrow}</span>
+              <h3 className="mt-2 font-semibold text-ink">{s.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-2">{s.description}</p>
+            </li>
+          ))}
+        </ol>
+        <Card
+          title={
+            <span className="flex items-center gap-2">
+              <Sigma className="h-5 w-5 text-brand-strong" aria-hidden="true" /> The model
+            </span>
+          }
+        >
+          <pre className="whitespace-pre-wrap break-words rounded-xl bg-brand-wash p-4 font-mono text-[13px] leading-6 text-ink">{modelEquation}</pre>
+          <p className="mt-3 text-sm leading-relaxed text-ink-2">{modelInterpretation}</p>
+        </Card>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-title font-bold text-ink">Results</h2>
+        <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+          <Card title="Model fit (R²) for all divisions" subtitle={`Purple bars are the ${DIVISIONS.length} divisions used in the dashboard.`}>
+            <div className="h-[520px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={r2Data} layout="vertical" margin={{ top: 0, right: 40, bottom: 0, left: 0 }} barCategoryGap={3}>
+                  <CartesianGrid stroke={GRID_STROKE} horizontal={false} />
+                  <XAxis type="number" ticks={r2Ticks} domain={[0, r2Ticks[r2Ticks.length - 1]]} tickFormatter={(v: number) => v.toFixed(1)} tick={AXIS_TICK} axisLine={AXIS_LINE} tickLine={false} />
+                  <YAxis type="category" dataKey="division" tick={{ ...AXIS_TICK, fill: "#1f1b2e" }} axisLine={false} tickLine={false} width={24} interval={0} />
+                  <Tooltip
+                    cursor={{ fill: "rgba(125,113,167,0.08)" }}
+                    content={({ active, payload }) => {
+                      const p = payload?.[0]?.payload as (typeof r2Data)[number] | undefined;
+                      return active && p ? <TooltipBox title={`Division ${p.division}`} rows={[{ label: "R²", value: formatR2(p.r2) }, { label: "Weeks", value: String(p.rows) }]} /> : null;
+                    }}
+                  />
+                  <Bar dataKey="r2" radius={[0, 3, 3, 0]} isAnimationActive={false}>
+                    {r2Data.map((d) => (
+                      <Cell key={d.division} fill={d.top ? "#5f5390" : "#d9d0e6"} />
                     ))}
-                  </div>
-                </div>
-              </GlassCard>
+                    <LabelList dataKey="r2" position="right" formatter={(v: unknown) => Number(v).toFixed(2)} style={{ fill: "#4a4560", fontSize: 11 }} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            {model.duplicateWeekDivisions.length > 0 && (
+              <p className="mt-2 text-xs text-ink-muted">
+                Division {model.duplicateWeekDivisions.join(", ")} has two rows per week ({r2Data.find((d) => d.division === model.duplicateWeekDivisions[0])?.rows} rows); it is fitted as-is.
+              </p>
+            )}
+          </Card>
 
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-                {notebookHighlights.map((highlight, index) => (
-                  <motion.div key={highlight.label} {...fadeUp(index * 0.05)}>
-                    <GlassCard className="h-full bg-white/75">
-                      <div className="text-xs font-bold uppercase tracking-[0.28em] text-[#7D71A7]/70">
-                        {highlight.label}
-                      </div>
-                      <div className="mt-3 text-4xl font-extrabold text-[#7D71A7]">{highlight.value}</div>
-                      <p className="mt-3 text-sm leading-7 text-[#5B507D]">{highlight.description}</p>
-                    </GlassCard>
-                  </motion.div>
-                ))}
+          <div className="grid content-start gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+            {takeaways.map((t) => (
+              <div key={t.title} className="card !p-5">
+                <h3 className="font-semibold text-ink">{t.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-ink-2">{t.detail}</p>
               </div>
-            </div>
-          </motion.section>
-
-          <motion.section {...fadeUp(0.05)}>
-            <SectionTitle
-              eyebrow="Method"
-              title="The workflow, compressed"
-              description="The notebook followed four moves: validate the weekly data, engineer MMM features, fit one model per division, and compare the outputs only where model fit was strongest."
-            />
-
-            <div className="mt-8 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-              <div className="grid gap-4 sm:grid-cols-2">
-                {processSteps.map((step, index) => (
-                  <motion.div key={step.eyebrow} {...fadeUp(0.06 + index * 0.04)}>
-                    <GlassCard className="h-full min-h-[205px]">
-                      <div className="mb-4 flex items-center justify-between">
-                        <span className="rounded-full bg-[#7D71A7]/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.24em] text-[#7D71A7]">
-                          {step.eyebrow}
-                        </span>
-                        {index < processSteps.length - 1 ? <ArrowRight className="h-5 w-5 text-[#CAADFF]" /> : <Sparkles className="h-5 w-5 text-[#CAADFF]" />}
-                      </div>
-                      <h3 className="text-lg font-bold text-[#7D71A7]">{step.title}</h3>
-                      <p className="mt-3 text-sm leading-6 text-[#5B507D]">{step.description}</p>
-                      <p className="mt-4 text-xs font-medium uppercase tracking-[0.12em] text-[#7D71A7]/65">
-                        {step.details[0]}
-                      </p>
-                    </GlassCard>
-                  </motion.div>
-                ))}
-              </div>
-
-              <GlassCard>
-                <div className="flex items-center gap-3 text-[#7D71A7]">
-                  <Sigma className="h-6 w-6" />
-                  <h3 className="text-2xl font-bold">Model in one view</h3>
-                </div>
-                <div className="mt-5 overflow-x-auto rounded-3xl bg-[#F6F1FF] p-5 font-mono text-sm leading-7 text-[#574B80]">
-                  {modelEquation.formula}
-                </div>
-                <p className="mt-4 text-sm leading-6 text-[#5B507D]">{modelEquation.interpretation}</p>
-
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  {engineeredFeatures.slice(0, 4).map((feature) => (
-                    <div key={feature} className="rounded-2xl border border-white/60 bg-white/85 px-4 py-3 text-sm leading-6 text-[#5B507D]">
-                      {feature}
-                    </div>
-                  ))}
-                </div>
-              </GlassCard>
-            </div>
-          </motion.section>
-
-          <motion.section {...fadeUp(0.08)}>
-            <SectionTitle
-              eyebrow="Results"
-              title="What mattered most"
-              description="The clearest read from the notebook is simple: trust the strongest-fitting divisions first, then compare channels by consistent coefficient patterns."
-            />
-
-            <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_1fr]">
-              <GlassCard className="min-h-[380px]">
-                <div className="flex items-center gap-3 text-[#7D71A7]">
-                  <Trophy className="h-6 w-6" />
-                  <h3 className="text-2xl font-bold">Top 6 divisions by R²</h3>
-                </div>
-                <div className="mt-5 h-[280px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={r2Leaderboard} layout="vertical" margin={{ left: 10, right: 16, top: 8, bottom: 8 }}>
-                      <CartesianGrid strokeOpacity={0.16} stroke="#7D71A7" horizontal={false} />
-                      <XAxis type="number" domain={[60, 70]} stroke="#7D71A7" tick={{ fill: "#7D71A7" }} unit="%" />
-                      <YAxis type="category" dataKey="division" stroke="#7D71A7" tick={{ fill: "#7D71A7", fontWeight: 700 }} width={36} />
-                      <Tooltip
-                        cursor={{ fill: "rgba(125, 113, 167, 0.08)" }}
-                        contentStyle={{ backgroundColor: "rgba(255,255,255,0.92)", border: "1px solid rgba(125,113,167,0.25)", borderRadius: 18 }}
-                        formatter={(value) => {
-                          const formatted = formatTooltipNumber(value, "%");
-                          return [formatted, "R²"] as const;
-                        }}
-                      />
-                      <Bar dataKey="r2Percent" radius={[0, 16, 16, 0]} fill="#CAADFF" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </GlassCard>
-
-              <GlassCard className="min-h-[380px]">
-                <div className="flex items-center gap-3 text-[#7D71A7]">
-                  <Activity className="h-6 w-6" />
-                  <h3 className="text-2xl font-bold">Channel strength</h3>
-                </div>
-                <div className="mt-5 h-[280px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={coefficientLeaderboard} margin={{ left: 0, right: 0, top: 8, bottom: 16 }}>
-                      <CartesianGrid strokeOpacity={0.16} stroke="#7D71A7" vertical={false} />
-                      <XAxis dataKey="channel" stroke="#7D71A7" tick={{ fill: "#7D71A7", fontWeight: 700 }} />
-                      <YAxis stroke="#7D71A7" tick={{ fill: "#7D71A7" }} unit="K" />
-                      <Tooltip
-                        cursor={{ fill: "rgba(125, 113, 167, 0.08)" }}
-                        contentStyle={{ backgroundColor: "rgba(255,255,255,0.92)", border: "1px solid rgba(125,113,167,0.25)", borderRadius: 18 }}
-                        formatter={(value) => {
-                          const formatted = formatTooltipNumber(value, "K");
-                          return [formatted, "Avg coefficient"] as const;
-                        }}
-                      />
-                      <Bar dataKey="averageCoefficientK" radius={[16, 16, 0, 0]}>
-                        {coefficientLeaderboard.map((entry) => (
-                          <Cell key={entry.channel} fill={entry.color} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </GlassCard>
-            </div>
-
-            <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {notebookTakeaways.map((takeaway) => (
-                <GlassCard key={takeaway.title} className="bg-white/75 p-5">
-                  <div className="text-sm font-bold uppercase tracking-[0.18em] text-[#7D71A7]/70">{takeaway.title}</div>
-                  <p className="mt-3 text-sm leading-6 text-[#5B507D]">{takeaway.detail}</p>
-                </GlassCard>
-              ))}
-            </div>
-          </motion.section>
-
-          <motion.section {...fadeUp(0.12)}>
-            <SectionTitle
-              eyebrow="Explorer"
-              title="One-division snapshot"
-              description="Use the selector to compare the top divisions without scrolling through every notebook artifact."
-            />
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              {divisionResults.map((result) => (
-                <button
-                  key={result.division}
-                  type="button"
-                  onClick={() => setSelectedDivision(result.division)}
-                  className={`rounded-full border px-5 py-3 text-sm font-semibold transition-all ${
-                    selectedDivision === result.division
-                      ? "border-[#7D71A7] bg-[#7D71A7] text-white shadow-lg"
-                      : "border-white/60 bg-white/70 text-[#7D71A7] hover:bg-white"
-                  }`}
-                >
-                  Division {result.division}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-6 grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-              <GlassCard>
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="text-xs font-bold uppercase tracking-[0.28em] text-[#7D71A7]/70">Division spotlight</div>
-                    <h3 className="mt-2 text-3xl font-extrabold text-[#7D71A7]">{selectedResult.division}</h3>
-                  </div>
-                  <div className="rounded-2xl bg-[#F6F1FF] px-4 py-3 text-right">
-                    <div className="text-xs uppercase tracking-[0.2em] text-[#7D71A7]/70">R²</div>
-                    <div className="text-2xl font-bold text-[#7D71A7]">{selectedResult.r2.toFixed(3)}</div>
-                  </div>
-                </div>
-
-                <div className="mt-5 rounded-3xl bg-[linear-gradient(135deg,rgba(255,194,226,0.25),rgba(202,173,255,0.22))] p-5">
-                  <div className="text-lg font-bold text-[#7D71A7]">{selectedResult.headline}</div>
-                  <p className="mt-2 text-sm leading-6 text-[#5B507D]">{selectedResult.summary}</p>
-                </div>
-
-                <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-3xl bg-white/85 p-4">
-                    <div className="text-sm font-semibold text-[#7D71A7]">Volume read</div>
-                    <p className="mt-2 text-sm leading-6 text-[#5B507D]">{selectedResult.volumeInsight}</p>
-                  </div>
-                  <div className="rounded-3xl bg-white/85 p-4">
-                    <div className="text-sm font-semibold text-[#7D71A7]">Coefficient read</div>
-                    <p className="mt-2 text-sm leading-6 text-[#5B507D]">{selectedResult.coefficientInsight}</p>
-                  </div>
-                </div>
-
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  {selectedResult.recommendations.map((recommendation) => (
-                    <div key={recommendation} className="flex items-start gap-3 rounded-2xl bg-white/85 px-4 py-3 text-sm leading-6 text-[#5B507D]">
-                      <Target className="mt-0.5 h-4 w-4 text-[#7D71A7]" />
-                      <span>{recommendation}</span>
-                    </div>
-                  ))}
-                </div>
-              </GlassCard>
-
-              <GlassCard>
-                <div className="grid gap-6 lg:grid-cols-2">
-                  <div>
-                    <div className="flex items-center gap-3 text-[#7D71A7]">
-                      <DatabaseZap className="h-5 w-5" />
-                      <h3 className="text-xl font-bold">Volume</h3>
-                    </div>
-                    <div className="mt-4 space-y-4">
-                      {selectedVolumeData.map((entry) => {
-                        const maxVolume = Math.max(...selectedVolumeData.map((item) => item.value));
-                        // Width as a percentage of the largest channel volume in this division.
-                        const width = (entry.value / maxVolume) * 100;
-
-                        return (
-                          <div key={entry.channel}>
-                            <div className="mb-2 flex items-center justify-between text-sm font-semibold text-[#5B507D]">
-                              <span>{entry.channel}</span>
-                              <span>{formatMillions(entry.value)}</span>
-                            </div>
-                            <div className="h-3 rounded-full bg-white/80">
-                              <div className="h-full rounded-full" style={{ width: `${width}%`, backgroundColor: entry.color }} />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center gap-3 text-[#7D71A7]">
-                      <Activity className="h-5 w-5" />
-                      <h3 className="text-xl font-bold">Coefficient</h3>
-                    </div>
-                    <div className="mt-4 space-y-4">
-                      {selectedCoefficientData.map((entry) => {
-                        const width = (Math.abs(entry.value) / maxSelectedCoefficient) * 100;
-
-                        return (
-                          <div key={entry.channel}>
-                            <div className="mb-2 flex items-center justify-between text-sm font-semibold text-[#5B507D]">
-                              <span>{entry.channel}</span>
-                              <span>{formatCoefficient(entry.value)}</span>
-                            </div>
-                            <div className="h-3 rounded-full bg-[#EFE8FF]">
-                              {/* Negative coefficients render in soft red to flag drag channels. */}
-                              <div
-                                className="h-full rounded-full"
-                                style={{ width: `${width}%`, backgroundColor: entry.value < 0 ? "#F39AA7" : entry.color }}
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </GlassCard>
-            </div>
-          </motion.section>
-
-          <motion.section {...fadeUp(0.14)}>
-            <SectionTitle
-              eyebrow="Guardrails"
-              title="Limits and next actions"
-              description="These results are reliable enough to guide budget priorities, but the model has real structural limits that matter before it drives operating decisions."
-            />
-
-            <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_0.95fr]">
-              <GlassCard>
-                <div className="flex items-center gap-3 text-[#7D71A7]">
-                  <TriangleAlert className="h-6 w-6" />
-                  <h3 className="text-2xl font-bold">What to keep in mind</h3>
-                </div>
-                <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                  {modelingLimitations.slice(0, 4).map((limitation) => (
-                    <div key={limitation.title} className="rounded-3xl bg-white/85 p-4">
-                      <div className="text-base font-semibold text-[#7D71A7]">{limitation.title}</div>
-                      <p className="mt-2 text-sm leading-6 text-[#5B507D]">{limitation.detail}</p>
-                    </div>
-                  ))}
-                </div>
-              </GlassCard>
-
-              <div className="grid gap-6">
-                <GlassCard>
-                  <div className="flex items-center gap-3 text-[#7D71A7]">
-                    <Target className="h-6 w-6" />
-                    <h3 className="text-2xl font-bold">Recommended moves</h3>
-                  </div>
-                  <div className="mt-5 space-y-3">
-                    {nextActions.map((action) => (
-                      <div key={action} className="flex items-start gap-3 rounded-3xl bg-white/85 px-4 py-3 text-sm leading-6 text-[#5B507D]">
-                        <div className="mt-1 h-2.5 w-2.5 rounded-full bg-[#7D71A7]" />
-                        <span>{action}</span>
-                      </div>
-                    ))}
-                  </div>
-                </GlassCard>
-
-                <GlassCard className="bg-[linear-gradient(135deg,rgba(125,113,167,0.18),rgba(255,194,226,0.26),rgba(252,246,217,0.46))]">
-                  <div className="flex items-center gap-3 text-[#7D71A7]">
-                    <Sparkles className="h-6 w-6" />
-                    <h3 className="text-2xl font-bold">Bottom line</h3>
-                  </div>
-                  <p className="mt-4 text-base leading-7 text-[#5B507D]">
-                    Email is the clearest winner, Facebook is the most dependable second lever, Google needs efficiency work, and Affiliate deserves the most scrutiny.
-                  </p>
-                </GlassCard>
-              </div>
-            </div>
-          </motion.section>
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-title font-bold text-ink">One division at a time</h2>
+        <DivisionPicker divisions={DIVISIONS} value={selected} onChange={setSelected} />
+        <Card
+          title={`Division ${division.division} · ${story.headline}`}
+          subtitle={`R² ${formatR2(division.r2)} (rank ${division.rank} of ${model.divisionCount}). ${story.volume}`}
+        >
+          <div className="grid gap-8 md:grid-cols-2">
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-ink">Impressions</h3>
+              <ul className="space-y-3">
+                {CHANNELS.map((c) => {
+                  const v = division.channels[c].impressions;
+                  return (
+                    <li key={c}>
+                      <div className="mb-1 flex justify-between text-sm">
+                        <span className="flex items-center gap-2 text-ink-2">
+                          <Swatch color={CHANNEL_COLORS[c]} shape="square" />
+                          {c}
+                        </span>
+                        <span className="num font-semibold text-ink">{formatCompact(v)}</span>
+                      </div>
+                      <div className="h-2.5 rounded-full bg-[#f0ebf6]">
+                        <div className="h-full rounded-full" style={{ width: `${Math.max(1, (v / maxVolume) * 100)}%`, background: CHANNEL_COLORS[c] }} />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-ink">Weekly sales change if impressions double</h3>
+              <ul className="space-y-3">
+                {CHANNELS.map((c) => {
+                  const v = doublingEffect(division.channels[c].coefficient);
+                  const w = (Math.abs(v) / maxEffect) * 50;
+                  return (
+                    <li key={c}>
+                      <div className="mb-1 flex justify-between text-sm">
+                        <span className="flex items-center gap-2 text-ink-2">
+                          <Swatch color={CHANNEL_COLORS[c]} shape="square" />
+                          {c}
+                        </span>
+                        <span className={`num font-semibold ${v < 0 ? "text-[#a3460a]" : "text-ink"}`}>{formatSignedCurrency(v, { compact: true })}</span>
+                      </div>
+                      {/* Centred bar: left of the midline is negative, right is positive. */}
+                      <div className="relative h-2.5 rounded-full bg-[#f0ebf6]">
+                        <div className="absolute inset-y-[-3px] left-1/2 w-px bg-[#8d84a8]" />
+                        <div
+                          className="absolute inset-y-0 rounded-full"
+                          style={{
+                            width: `${w}%`,
+                            left: v >= 0 ? "50%" : `${50 - w}%`,
+                            background: v >= 0 ? CHANNEL_COLORS[c] : "#c2570c",
+                          }}
+                        />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+        </Card>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-title font-bold text-ink">Limits and next steps</h2>
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+          <Card
+            title={
+              <span className="flex items-center gap-2">
+                <TriangleAlert className="h-5 w-5 text-[#a3460a]" aria-hidden="true" /> What to keep in mind
+              </span>
+            }
+          >
+            <div className="grid gap-4 sm:grid-cols-2">
+              {modelingLimitations.map((l) => (
+                <div key={l.title}>
+                  <h3 className="font-semibold text-ink">{l.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-ink-2">{l.detail}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+          <Card
+            title={
+              <span className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-brand-strong" aria-hidden="true" /> To make this decision-grade
+              </span>
+            }
+          >
+            <ul className="space-y-2">
+              {nextActions.map((a) => (
+                <li key={a} className="flex gap-3 text-sm leading-relaxed text-ink-2">
+                  <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-strong" />
+                  {a}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 text-xs text-ink-muted">
+              Source: {model.source}. Regenerate with <code>python3 scripts/derive_model_outputs.py</code>.
+            </p>
+          </Card>
+        </div>
+      </section>
+    </Page>
   );
 }

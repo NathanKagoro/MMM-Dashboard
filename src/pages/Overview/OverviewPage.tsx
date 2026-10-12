@@ -1,73 +1,102 @@
-import AnimatedBackground from "../../components/AnimatedBackground";
-import CardCarousel from "./components/carousel/CardCarousel";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import MainTrendChart from "./components/MainTrendChart";
 import CampaignHeatmap from "./components/CampaignHeatmap";
+import { Card, Page, PageHeader } from "../../components/ui/Page";
+import { KpiStrip } from "../../components/ui/KpiStrip";
+import { channelSummary, model, meanR2 } from "../../data/model";
+import { formatCurrency, formatR2 } from "../../lib/format";
+import { PERIOD_SHORT } from "../../data/period";
 
-// Hero photo from Unsplash
-const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1556761175-4b46a572b786?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTk2MzV8MHwxfGFsbHwxfHxkYXRhJTIwYW5hbHl0aWNzfGVufDB8fHx8MTY5NTg2NjM4OQ&ixlib=rb-4.0.3&q=80&w=1200";
+const summary = channelSummary();
+const best = [...summary].sort((a, b) => b.meanCoefficient - a.meanCoefficient)[0];
+const affiliate = summary.find((s) => s.channel === "Affiliate")!;
+const top = model.topDivisions;
+const r2Min = Math.min(...top.map((d) => d.r2));
+const r2Max = Math.max(...top.map((d) => d.r2));
 
 export default function OverviewPage() {
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#FCF6D9]/20">
-      {/* Fullscreen Background */}
-      <AnimatedBackground />
+    <Page>
+      <PageHeader
+        title="Marketing Mix Model"
+        lead={
+          <>
+            Which channels move weekly sales? One regression per division, fitted on {model.period.weeks} weeks of
+            impressions and sales ({PERIOD_SHORT}).
+          </>
+        }
+      />
 
-      {/* Page Content */}
-      <div className="relative z-10 flex flex-col gap-12 px-8 pt-24">
+      <KpiStrip
+        items={[
+          {
+            label: "Strongest channel",
+            value: best.channel,
+            note: `${formatCurrency(best.meanDoublingEffect, { compact: true })}/wk if impressions double (avg.)`,
+          },
+          {
+            label: "Model fit (R²)",
+            value: formatR2(meanR2()),
+            note: `Mean of top ${top.length} divisions; range ${formatR2(r2Min)}–${formatR2(r2Max)}`,
+          },
+          {
+            label: "Weeks of data",
+            value: model.period.weeks,
+            note: PERIOD_SHORT,
+          },
+          {
+            label: "Divisions modelled",
+            value: (
+              <>
+                {top.length}
+                <span className="text-base font-semibold text-ink-muted"> of {model.divisionCount}</span>
+              </>
+            ),
+            note: "Highest-R² fits, used for every chart",
+          },
+          {
+            label: "Affiliate effect",
+            value: (
+              <>
+                {affiliate.negativeDivisions}
+                <span className="text-base font-semibold text-ink-muted">/{top.length} negative</span>
+              </>
+            ),
+            note: "Divisions where it lowers predicted sales",
+          },
+        ]}
+      />
 
-        {/* Hero Title */}
-        <div className="w-full text-center">
-          <h1 className="text-5xl font-extrabold text-[#7D71A7]">
-            Marketing Mix Modeling Dashboard
-          </h1>
-          <p className="mt-2 text-lg text-[#7D71A7]/80">
-            Visualize, Analyze, and Optimize Marketing Performance
-          </p>
-        </div>
-
-        {/* Hero Image + Intro */}
-        <div className="flex flex-col items-center gap-4">
-          <img
-            src={HERO_IMAGE}
-            alt="Bright marketing data"
-            className="max-w-4xl rounded-2xl shadow-lg object-cover"
-          />
-          <p className="text-center text-base text-[#7D71A7]/90 max-w-3xl">
-            This dashboard uses Marketing Mix Modeling to analyze how different marketing channels affect sales. It looks at real campaign data from Google, Email, Facebook, and Affiliate marketing to show which channels work best, helping you decide where to spend your marketing budget.
-          </p>
-        </div>
-
-        {/* Carousel */}
-        <div className="flex justify-center my-12">
-          <CardCarousel />
-        </div>
-
-        {/* Trend Chart + Heatmap */}
-       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Trend Chart */}
-          <div className="flex flex-col items-center w-full h-[480px]">
-            <h2 className="mb-2 text-xl font-bold text-[#7D71A7] text-center border-b border-[#7D71A7]/40 w-full pb-2">
-              Trend Overview
-            </h2>
-            <div className="flex-1 w-full">
-              <MainTrendChart />
-            </div>
-          </div>
-
-          {/* Heatmap */}
-          <div className="flex flex-col items-center w-full h-[480px]">
-            <h2 className="mb-2 text-xl font-bold text-[#7D71A7] text-center border-b border-[#7D71A7]/40 w-full pb-2">
-              Campaign Heatmap
-            </h2>
-            <div className="flex-1 w-full">
-              <CampaignHeatmap />
-            </div>
-          </div>
-        </div>
-
+      <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
+        <Card
+          title="Actual vs predicted weekly sales"
+          subtitle={`Sum of the ${top.length} modelled divisions, ${PERIOD_SHORT}. Combined in-sample R² ${formatR2(model.combinedR2)}.`}
+        >
+          <MainTrendChart />
+        </Card>
+        <Card
+          title="Channel effect by division"
+          subtitle="Modelled change in weekly sales if a channel's impressions doubled, all else equal."
+        >
+          <CampaignHeatmap />
+        </Card>
       </div>
 
-    </div>
+      <div className="flex flex-wrap gap-3">
+        <Link
+          to="/campaigns"
+          className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-brand-strong px-4 text-sm font-semibold text-white hover:bg-[#51467d]"
+        >
+          Explore a division <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
+        <Link
+          to="/data"
+          className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#e2d9f0] bg-white px-4 text-sm font-semibold text-ink hover:border-brand"
+        >
+          How the model works
+        </Link>
+      </div>
+    </Page>
   );
 }
