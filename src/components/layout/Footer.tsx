@@ -1,40 +1,31 @@
+import { Link } from "react-router-dom";
+import { PERIOD_SHORT } from "../../data/period";
+
 export default function Footer() {
+  const linkClass =
+    "inline-flex min-h-[44px] items-center text-sm font-medium text-ink-2 underline-offset-4 hover:text-brand-strong hover:underline";
   return (
-    <footer className="relative bg-transparent">
-      
-      {/* 1️⃣ TRANSPARENT OVERLAP SPACER */}
-      {/* This overlaps the page above, but is invisible */}
-      <div className="h-24 -mt-24 pointer-events-none" />
-
-      {/* 2️⃣ ACTUAL FOOTER */}
-      {/* This does NOT overlap anything */}
-      <div
-        className="
-          bg-white/40
-          backdrop-blur-xl
-          border-t border-white/30
-          shadow-inner
-        "
-      >
-        <div className="mx-auto max-w-7xl px-8 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <span className="text-sm font-semibold text-[#7D71A7]">
-              © 2026 Marketing Mix Modeling Dashboard
-            </span>
-
-            <div className="flex gap-6 text-sm text-[#7D71A7]/80">
-              <button className="hover:text-[#7D71A7] transition">
-                About
-              </button>
-              <button className="hover:text-[#7D71A7] transition">
-                Methodology
-              </button>
-              <button className="hover:text-[#7D71A7] transition">
-                Contact
-              </button>
-            </div>
-          </div>
-        </div>
+    <footer className="mt-16 border-t border-[#ebe4f5] bg-white/70">
+      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <p className="text-sm text-ink-muted">
+          © 2026 Nathan Kagoro · Sample media data, {PERIOD_SHORT}
+        </p>
+        <nav aria-label="Footer" className="flex gap-6">
+          <a className={linkClass} href="https://nathankagoro.com">
+            About
+          </a>
+          <Link className={linkClass} to="/data">
+            Methodology
+          </Link>
+          <a
+            className={linkClass}
+            href="https://www.linkedin.com/in/nathan-kagoro-06ba31270/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Contact
+          </a>
+        </nav>
       </div>
     </footer>
   );
