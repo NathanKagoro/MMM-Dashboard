@@ -5,11 +5,15 @@ const INK = "#1f1b2e";
 // (roughly 0.18 < L < 0.24), so the ramp skips that band by stepping darker.
 const minContrast = (bg: string) => Math.max(contrastRatio(INK, bg), contrastRatio("#ffffff", bg));
 
-/** Diverging scale: orange (negative) ← neutral grey → purple (positive). */
+/**
+ * Diverging scale in the brand palette: deep rose (negative) ← soft blush-grey → lavender
+ * → deep purple (positive). Rose and purple stay distinguishable for colour-blind readers
+ * because they also differ strongly in lightness and every cell prints a signed value.
+ */
 export const DIVERGING = {
-  negative: "#a3460a",
-  neutral: "#f2f0f4",
-  positive: "#4f4385",
+  negative: "#b42a55",
+  neutral: "#f6f1f7",
+  positive: "#4a3a8c",
 } as const;
 
 /**

@@ -44,16 +44,20 @@ export const model = raw as ModelOutputs;
 export const CHANNELS: ChannelName[] = ["Google", "Email", "Facebook", "Affiliate"];
 
 /**
- * Channel identity colours, validated for colour-vision deficiency on the light surface
- * (all-pairs CVD ΔE ≥ 9.6, normal-vision ΔE ≥ 21). Facebook is < 3:1 against white, so
- * every chart that uses it also labels the mark directly.
+ * Channel identity colours, tuned towards the brand (Google indigo-violet, Email berry)
+ * and validated for colour-vision deficiency on the light surface: all-pairs CVD ΔE ≥ 11,
+ * normal-vision ΔE ≥ 17. Facebook is < 3:1 against white, so every chart that uses it
+ * also labels the mark directly.
  */
 export const CHANNEL_COLORS: Record<ChannelName, string> = {
-  Google: "#2a78d6",
+  Google: "#5b63d9",
   Email: "#c2307a",
   Facebook: "#1baf7a",
-  Affiliate: "#8a6400",
+  Affiliate: "#9a7a00",
 };
+
+/** Text colour for negative values (rose, 7.5:1 on white, 6.6:1 on glass cards). */
+export const NEGATIVE_TEXT = "#a01f50";
 
 export const DIVISIONS = model.topDivisions.map((d) => d.division);
 

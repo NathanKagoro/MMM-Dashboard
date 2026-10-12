@@ -50,7 +50,7 @@ export default function OverviewPage() {
             value: (
               <>
                 {top.length}
-                <span className="text-base font-semibold text-ink-muted"> of {model.divisionCount}</span>
+                <span className="text-base font-semibold"> of {model.divisionCount}</span>
               </>
             ),
             note: "Highest-R² fits, used for every chart",
@@ -60,7 +60,7 @@ export default function OverviewPage() {
             value: (
               <>
                 {affiliate.negativeDivisions}
-                <span className="text-base font-semibold text-ink-muted">/{top.length} negative</span>
+                <span className="text-base font-semibold">/{top.length} negative</span>
               </>
             ),
             note: "Divisions where it lowers predicted sales",
@@ -86,13 +86,13 @@ export default function OverviewPage() {
       <div className="flex flex-wrap gap-3">
         <Link
           to="/campaigns"
-          className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-brand-strong px-4 text-sm font-semibold text-white hover:bg-[#51467d]"
+          className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-brand-strong px-4 text-sm font-semibold text-white shadow-card transition hover:-translate-y-0.5 hover:bg-brand-plum"
         >
           Explore a division <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
         <Link
           to="/data"
-          className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#e2d9f0] bg-white px-4 text-sm font-semibold text-ink hover:border-brand"
+          className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#ead9f5] bg-white/70 px-4 text-sm font-semibold text-ink backdrop-blur transition hover:-translate-y-0.5 hover:bg-brand-pink/50"
         >
           How the model works
         </Link>

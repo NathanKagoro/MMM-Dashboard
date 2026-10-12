@@ -3,7 +3,7 @@ import { Sigma, TriangleAlert, Target } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, DivisionPicker, Page, PageHeader } from "../../components/ui/Page";
 import { AXIS_LINE, AXIS_TICK, GRID_STROKE, Swatch, TooltipBox } from "../../components/charts/ChartParts";
-import { CHANNELS, CHANNEL_COLORS, DIVISIONS, doublingEffect, getDivision, meanR2, model } from "../../data/model";
+import { CHANNELS, CHANNEL_COLORS, NEGATIVE_TEXT, DIVISIONS, doublingEffect, getDivision, meanR2, model } from "../../data/model";
 import { formatCompact, formatR2, formatSignedCurrency, niceTicks } from "../../lib/format";
 import { PERIOD_LABEL } from "../../data/period";
 import {
@@ -92,7 +92,7 @@ export default function DataExplorerPage() {
                   />
                   <Bar dataKey="r2" radius={[0, 3, 3, 0]} isAnimationActive={false}>
                     {r2Data.map((d) => (
-                      <Cell key={d.division} fill={d.top ? "#5f5390" : "#d9d0e6"} />
+                      <Cell key={d.division} fill={d.top ? "#7D71A7" : "#e6d6f2"} />
                     ))}
                     <LabelList dataKey="r2" position="right" formatter={(v: unknown) => Number(v).toFixed(2)} style={{ fill: "#4a4560", fontSize: 11 }} />
                   </Bar>
@@ -139,7 +139,7 @@ export default function DataExplorerPage() {
                         </span>
                         <span className="num font-semibold text-ink">{formatCompact(v)}</span>
                       </div>
-                      <div className="h-2.5 rounded-full bg-[#f0ebf6]">
+                      <div className="h-2.5 rounded-full bg-[#f3e8f7]">
                         <div className="h-full rounded-full" style={{ width: `${Math.max(1, (v / maxVolume) * 100)}%`, background: CHANNEL_COLORS[c] }} />
                       </div>
                     </li>
@@ -160,17 +160,17 @@ export default function DataExplorerPage() {
                           <Swatch color={CHANNEL_COLORS[c]} shape="square" />
                           {c}
                         </span>
-                        <span className={`num font-semibold ${v < 0 ? "text-[#a3460a]" : "text-ink"}`}>{formatSignedCurrency(v, { compact: true })}</span>
+                        <span className={`num font-semibold ${v < 0 ? "" : "text-ink"}`} style={{ color: v < 0 ? NEGATIVE_TEXT : undefined }}>{formatSignedCurrency(v, { compact: true })}</span>
                       </div>
                       {/* Centred bar: left of the midline is negative, right is positive. */}
-                      <div className="relative h-2.5 rounded-full bg-[#f0ebf6]">
-                        <div className="absolute inset-y-[-3px] left-1/2 w-px bg-[#8d84a8]" />
+                      <div className="relative h-2.5 rounded-full bg-[#f3e8f7]">
+                        <div className="absolute inset-y-[-3px] left-1/2 w-px bg-brand" />
                         <div
                           className="absolute inset-y-0 rounded-full"
                           style={{
                             width: `${w}%`,
                             left: v >= 0 ? "50%" : `${50 - w}%`,
-                            background: v >= 0 ? CHANNEL_COLORS[c] : "#c2570c",
+                            background: v >= 0 ? CHANNEL_COLORS[c] : "#b42a55",
                           }}
                         />
                       </div>
@@ -189,7 +189,7 @@ export default function DataExplorerPage() {
           <Card
             title={
               <span className="flex items-center gap-2">
-                <TriangleAlert className="h-5 w-5 text-[#a3460a]" aria-hidden="true" /> What to keep in mind
+                <TriangleAlert className="h-5 w-5 text-[#a01f50]" aria-hidden="true" /> What to keep in mind
               </span>
             }
           >

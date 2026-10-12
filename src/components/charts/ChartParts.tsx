@@ -2,9 +2,9 @@ import type { ReactNode } from "react";
 import { CHANNEL_COLORS, type ChannelName } from "../../data/model";
 
 /** Shared tick / grid styling so every Recharts chart reads as one system. */
-export const AXIS_TICK = { fill: "#5c5670", fontSize: 12 } as const;
-export const GRID_STROKE = "#ece6f4";
-export const AXIS_LINE = { stroke: "#d9d0e6" } as const;
+export const AXIS_TICK = { fill: "#4f4868", fontSize: 12 } as const;
+export const GRID_STROKE = "#eee2f3";
+export const AXIS_LINE = { stroke: "#dccbea" } as const;
 
 interface TooltipRow {
   label: string;
@@ -16,7 +16,7 @@ interface TooltipRow {
 /** Light tooltip with near-black text; rows are pre-formatted strings. */
 export function TooltipBox({ title, rows }: { title: ReactNode; rows: TooltipRow[] }) {
   return (
-    <div className="min-w-[10rem] rounded-xl border border-[#e2d9f0] bg-white px-3 py-2 text-sm shadow-card">
+    <div className="min-w-[10rem] rounded-2xl border border-[#ead9f5] bg-white/90 px-3 py-2 text-sm shadow-card backdrop-blur">
       <div className="mb-1 font-semibold text-ink">{title}</div>
       {rows.map((r) => (
         <div key={r.label} className="flex items-center justify-between gap-4">

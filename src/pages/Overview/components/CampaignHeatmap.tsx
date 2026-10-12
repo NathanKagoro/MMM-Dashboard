@@ -9,7 +9,7 @@ const legendStops = [-1, -0.25, 0, 0.25, 1].map((t) => t * maxAbs);
 
 /**
  * Division × channel grid of the modelled effect of doubling a channel's impressions.
- * Every cell prints its value; colour is a diverging scale (purple positive, orange negative).
+ * Every cell prints its value; colour is a diverging scale (lavender → deep purple positive, rose negative).
  */
 export default function CampaignHeatmap() {
   return (

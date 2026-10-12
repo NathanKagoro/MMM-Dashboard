@@ -46,7 +46,7 @@ export default function MainTrendChart() {
               width={52}
             />
             <Tooltip
-              cursor={{ stroke: "#b8acd3", strokeWidth: 1 }}
+              cursor={{ stroke: "#CAADFF", strokeWidth: 1 }}
               content={({ active, payload, label }) =>
                 active && payload?.length ? (
                   <TooltipBox

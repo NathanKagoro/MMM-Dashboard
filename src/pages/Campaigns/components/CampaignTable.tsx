@@ -1,4 +1,4 @@
-import { CHANNEL_COLORS, ordinal, type ChannelTableRow } from "../../../data/model";
+import { CHANNEL_COLORS, NEGATIVE_TEXT, ordinal, type ChannelTableRow } from "../../../data/model";
 import { formatCompact, formatInteger, formatPercent, formatSignedCurrency } from "../../../lib/format";
 import { Swatch } from "../../../components/charts/ChartParts";
 
@@ -10,7 +10,7 @@ export default function CampaignTable({ rows }: { rows: ChannelTableRow[] }) {
   return (
     <>
       {/* Phones: one stacked row per channel, no horizontal scrolling. */}
-      <ol className="divide-y divide-[#f0ebf6] sm:hidden">
+      <ol className="divide-y divide-[#f3e8f7] sm:hidden">
         {rows.map((r) => (
           <li key={r.channel} className="py-3">
             <div className="flex items-center justify-between gap-3">
@@ -19,7 +19,7 @@ export default function CampaignTable({ rows }: { rows: ChannelTableRow[] }) {
                 <Swatch color={CHANNEL_COLORS[r.channel]} shape="square" />
                 {r.channel}
               </span>
-              <span className={`num whitespace-nowrap font-semibold ${r.doublingEffect < 0 ? "text-[#a3460a]" : "text-ink"}`}>
+              <span className={`num whitespace-nowrap font-semibold ${r.doublingEffect < 0 ? "" : "text-ink"}`} style={{ color: r.doublingEffect < 0 ? NEGATIVE_TEXT : undefined }}>
                 {formatSignedCurrency(r.doublingEffect)}/wk
               </span>
             </div>
@@ -45,7 +45,7 @@ export default function CampaignTable({ rows }: { rows: ChannelTableRow[] }) {
     <div className="hidden overflow-x-auto sm:block">
       <table className="w-full min-w-[40rem] text-sm">
         <thead>
-          <tr className="border-b border-[#e2d9f0] text-left text-xs uppercase tracking-[0.06em] text-ink-muted">
+          <tr className="border-b border-[#ead9f5] text-left text-xs uppercase tracking-[0.06em] text-ink-muted">
             <th scope="col" className="py-2 pr-3 font-semibold">
               Rank
             </th>
@@ -70,7 +70,7 @@ export default function CampaignTable({ rows }: { rows: ChannelTableRow[] }) {
           {rows.map((r) => {
             const negative = r.doublingEffect < 0;
             return (
-              <tr key={r.channel} className="border-b border-[#f0ebf6] last:border-none">
+              <tr key={r.channel} className="border-b border-[#f3e8f7] last:border-none">
                 <td className="py-3 pr-3 font-semibold text-ink-2">{ordinal(r.rank)}</td>
                 <th scope="row" className="px-3 py-3 text-left font-semibold text-ink">
                   <span className="flex items-center gap-2">
@@ -83,7 +83,7 @@ export default function CampaignTable({ rows }: { rows: ChannelTableRow[] }) {
                   <span className="text-ink-muted"> · {formatCompact(r.weeklyImpressions)}</span>
                 </td>
                 <td className="num px-3 py-3 text-right text-ink">{formatInteger(r.coefficient)}</td>
-                <td className={`num py-3 pl-3 text-right font-semibold ${negative ? "text-[#a3460a]" : "text-ink"}`}>
+                <td className={`num py-3 pl-3 text-right font-semibold ${negative ? "" : "text-ink"}`} style={{ color: negative ? NEGATIVE_TEXT : undefined }}>
                   {formatSignedCurrency(r.doublingEffect)}
                   <span className="font-normal text-ink-muted"> · {formatPercent(r.shareOfMeanSales)}</span>
                 </td>

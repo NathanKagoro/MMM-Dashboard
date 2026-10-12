@@ -68,9 +68,9 @@ export default function SpendSalesScatter({ division }: { division: DivisionFit 
             tickLine={false}
             width={56}
           />
-          <ReferenceLine y={0} stroke="#8d84a8" strokeWidth={1.25} />
+          <ReferenceLine y={0} stroke="#7D71A7" strokeWidth={1.25} />
           <Tooltip
-            cursor={{ strokeDasharray: "3 3", stroke: "#b8acd3" }}
+            cursor={{ strokeDasharray: "3 3", stroke: "#CAADFF" }}
             content={({ active, payload }) => {
               const p = payload?.[0]?.payload as Point | undefined;
               return active && p ? (
