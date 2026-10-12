@@ -2,7 +2,7 @@
 
 An interactive Media Mix Modelling (MMM) dashboard built with React and TypeScript. It presents the outputs of a Python notebook that fits OLS regression models to weekly media spend and sales data across six business divisions, and lets analysts explore the results without opening the notebook.
 
-Live at [nathankagoro.com](https://nathankagoro.com).
+Live at [nathankagoro.github.io/MMM-Dashboard](https://nathankagoro.github.io/MMM-Dashboard/), and linked from [nathankagoro.com](https://nathankagoro.com).
 
 ---
 
@@ -17,28 +17,28 @@ The notebook reads a weekly media spend CSV, engineers MMM features (log transfo
 | **Overview** | High-level KPI summary, trend chart, campaign heatmap, and key insight carousel |
 | **Campaigns** | Campaign-level table with spend/sales scatter and performance comparison |
 | **Sales** | Revenue, orders, and AOV charts with a category treemap and sticky filter bar |
-| **Data** | Full model methodology — pipeline steps, model equation, R² leaderboard, per-division channel deep-dive, and limitations |
+| **Data** | Full model methodology â€” pipeline steps, model equation, RÂ² leaderboard, per-division channel deep-dive, and limitations |
 
 ### Model
 
 ```
-Sales = ß0 + ß1·log(Google) + ß2·log(Email) + ß3·log(Facebook)
-      + ß4·log(Affiliate) + ß5·log(Organic) + ß6·Trend
-      + ß7·sin_week + ß8·cos_week
+Sales = Î²0 + Î²1Â·log(Google) + Î²2Â·log(Email) + Î²3Â·log(Facebook)
+      + Î²4Â·log(Affiliate) + Î²5Â·log(Organic) + Î²6Â·Trend
+      + Î²7Â·sin_week + Î²8Â·cos_week
 ```
 
-Six divisions are modelled independently (Y, D, H, I, M, Q). Division Y achieves the highest R² of 0.668. Email is the strongest channel by coefficient across most divisions; Affiliate is frequently near zero or negative.
+Six divisions are modelled independently (Y, D, H, I, M, Q). Division Y achieves the highest RÂ² of 0.668. Email is the strongest channel by coefficient across most divisions; Affiliate is frequently near zero or negative.
 
 ---
 
 ## Tech stack
 
 - **React 19** + **TypeScript 4.9**
-- **Framer Motion 12** — scroll-triggered animations and background blobs
-- **Recharts 3** — bar charts and scatter plots
-- **Tailwind CSS 3** — utility-first styling with glass-card aesthetics
-- **Lucide React** — icons
-- **React Router 6** — client-side routing
+- **Framer Motion 12** â€” scroll-triggered animations and background blobs
+- **Recharts 3** â€” bar charts and scatter plots
+- **Tailwind CSS 3** â€” utility-first styling with glass-card aesthetics
+- **Lucide React** â€” icons
+- **React Router 7** â€” client-side routing
 
 ---
 

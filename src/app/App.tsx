@@ -8,7 +8,7 @@ import DataExplorerPage from "../pages/DataExplorer/DataExplorerPage";
 
 export default function App() {
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <div className="relative flex flex-col h-screen w-screen">
         {/* Global top navigation */}
         <TopNav />

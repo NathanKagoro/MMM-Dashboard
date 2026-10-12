@@ -1,6 +1,7 @@
 {
   "name": "mmm-dashboard",
   "version": "0.1.0",
+  "homepage": "/MMM-Dashboard",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
