@@ -86,13 +86,13 @@ export default function OverviewPage() {
       <div className="flex flex-wrap gap-3">
         <Link
           to="/campaigns"
-          className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-brand-strong px-4 text-sm font-semibold text-white shadow-card transition hover:-translate-y-0.5 hover:bg-brand-plum"
+          className="inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-brand-plum px-4 text-sm font-semibold text-white shadow-card transition-colors hover:bg-[#2d2350]"
         >
           Explore a division <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
         <Link
           to="/data"
-          className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#ead9f5] bg-white/70 px-4 text-sm font-semibold text-ink backdrop-blur transition hover:-translate-y-0.5 hover:bg-brand-pink/50"
+          className="inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-brand-line bg-white px-4 text-sm font-semibold text-ink shadow-card transition-colors hover:border-brand-pink hover:bg-brand-pinkSoft"
         >
           How the model works
         </Link>

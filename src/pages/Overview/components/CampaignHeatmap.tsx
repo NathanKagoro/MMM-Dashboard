@@ -59,6 +59,7 @@ export default function CampaignHeatmap() {
       <div className="mt-4">
         <div
           aria-hidden="true"
+          data-legend="diverging-scale"
           className="h-2.5 rounded-full"
           style={{
             background: `linear-gradient(90deg, ${legendStops.map((v) => divergingColor(v, maxAbs)).join(",")})`,

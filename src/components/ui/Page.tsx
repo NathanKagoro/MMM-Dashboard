@@ -10,8 +10,8 @@ export function PageHeader({ title, lead, eyebrow }: { title: string; lead: Reac
   return (
     <header className="max-w-3xl">
       <p className="eyebrow">{eyebrow ?? `Sample media data · ${PERIOD_LABEL}`}</p>
-      <h1 className="title-gradient mt-2 pb-1 text-display font-extrabold">{title}</h1>
-      <div aria-hidden="true" className="accent-bar mt-2" />
+      <h1 className="mt-2 text-display font-extrabold text-brand-plum">{title}</h1>
+      <div aria-hidden="true" className="accent-bar mt-3" />
       <p className="mt-3 text-base leading-relaxed text-ink-2 sm:text-lg">{lead}</p>
     </header>
   );
@@ -70,10 +70,10 @@ export function DivisionPicker({
             type="button"
             aria-pressed={active}
             onClick={() => onChange(d)}
-            className={`min-h-[44px] rounded-xl border px-4 text-sm font-semibold transition-colors ${
+            className={`min-h-[44px] rounded-lg border px-4 text-sm font-semibold transition-colors ${
               active
-                ? "border-brand-strong bg-brand-strong text-white shadow-card"
-                : "border-[#ead9f5] bg-white/70 text-ink-2 backdrop-blur hover:border-brand-lilac hover:bg-brand-pink/40 hover:text-ink"
+                ? "border-brand-plum bg-brand-plum text-white"
+                : "border-brand-line bg-white text-ink-2 shadow-card hover:border-brand-pink hover:bg-brand-pinkSoft hover:text-ink"
             }`}
           >
             Division {d}

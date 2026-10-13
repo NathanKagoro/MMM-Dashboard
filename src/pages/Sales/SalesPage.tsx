@@ -182,7 +182,7 @@ export default function SalesPage() {
                 <YAxis type="category" dataKey="channel" tick={{ ...AXIS_TICK, fill: "#1f1b2e", fontWeight: 600 }} axisLine={false} tickLine={false} width={76} />
                 <ReferenceLine x={0} stroke="#7D71A7" />
                 <Tooltip
-                  cursor={{ fill: "rgba(125,113,167,0.08)" }}
+                  cursor={{ fill: "#fdf0f6" }}
                   content={({ active, payload }) => {
                     const p = payload?.[0]?.payload as (typeof byEffect)[number] | undefined;
                     return active && p ? (
@@ -225,7 +225,7 @@ export default function SalesPage() {
                 />
                 <YAxis type="category" dataKey="channel" tick={{ ...AXIS_TICK, fill: "#1f1b2e", fontWeight: 600 }} axisLine={false} tickLine={false} width={76} />
                 <Tooltip
-                  cursor={{ fill: "rgba(125,113,167,0.08)" }}
+                  cursor={{ fill: "#fdf0f6" }}
                   content={({ active, payload }) => {
                     const p = payload?.[0]?.payload as (typeof byVolume)[number] | undefined;
                     return active && p ? (
@@ -302,9 +302,9 @@ export default function SalesPage() {
       <Card title="What the model suggests" subtitle="Directional: the model is correlational and fitted in-sample. Validate with lift tests before moving budget.">
         <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {recommendations.map((r, i) => (
-            <li key={r.title} className="rounded-2xl border border-white/70 bg-gradient-to-br from-white/80 to-brand-pink/25 p-4">
+            <li key={r.title} className="rounded-xl border border-brand-line bg-white p-4">
               <div className="flex items-center gap-2">
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-brand-wash text-sm font-bold text-brand-strong">{i + 1}</span>
+                <span className="grid h-7 w-7 place-items-center rounded-full bg-brand-lilacSoft text-sm font-bold text-brand-plum">{i + 1}</span>
                 <span aria-hidden="true" className="h-3 w-3 rounded-[3px]" style={{ background: CHANNEL_COLORS[r.channel] }} />
                 <h3 className="font-semibold text-ink">{r.title}</h3>
               </div>

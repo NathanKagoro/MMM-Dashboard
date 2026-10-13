@@ -26,9 +26,9 @@
 }
 
 @layer components {
-  /* Glass card: translucent white over the pastel blobs, soft pink/lavender edge and glow. */
+  /* Flat surface: solid white, hairline lilac border, one low shadow. No blur, no gradient. */
   .card {
-    @apply rounded-3xl border border-[#ead9f5] bg-white/70 p-5 shadow-card backdrop-blur-xl sm:p-6;
+    @apply rounded-2xl border border-brand-line bg-white p-5 shadow-card sm:p-6;
   }
   .eyebrow {
     @apply text-xs font-semibold uppercase tracking-[0.14em] text-brand-strong;
@@ -36,17 +36,9 @@
   .num {
     font-variant-numeric: tabular-nums;
   }
-  /* Page title: plum → violet → berry. Every stop is ≥ 5.6:1 on the darkest backdrop. */
-  .title-gradient {
-    background-image: linear-gradient(100deg, #2d2350 0%, #4a3a8c 55%, #7a2a66 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  /* Decorative accent bar under titles (non-text, pastel is fine). */
+  /* Short solid accent bar under page titles (decorative). */
   .accent-bar {
-    @apply h-1.5 w-20 rounded-full;
-    background-image: linear-gradient(90deg, #FFADC7, #CAADFF 55%, #7D71A7);
+    @apply h-1 w-12 rounded-full bg-brand;
   }
 }
 

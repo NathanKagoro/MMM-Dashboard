@@ -7,26 +7,28 @@ export interface Kpi {
 }
 
 /**
- * The original pastel KPI colours, now with dark text. Contrast (value / note text):
- * pink #FFC2E2 11.2 / 7.8:1 · lavender #CAADFF 8.7 / 6.0:1 · rose #FFADC7 9.6 / 6.7:1 ·
- * lilac-purple #c4b8ea 9.1 / 6.3:1 · blush #ffd6e8 12.8 / 8.9:1.
+ * Each tile is solid white with a 4px solid pastel top bar in its own colour; the first
+ * ("headline") tile is a solid pastel pink fill. Text is plum/near-black on both:
+ * value #3b2f6e 11.6:1 on white, 7.7:1 on #FFC2E2; note #3d3357 11.4:1 / 7.8:1.
  */
-export const KPI_FILLS = ["#FFC2E2", "#CAADFF", "#FFADC7", "#c4b8ea", "#ffd6e8"] as const;
-export const KPI_TEXT = "#1f1b2e";
+export const KPI_ACCENTS = ["#FFC2E2", "#CAADFF", "#FFADC7", "#7D71A7", "#CAADFF"] as const;
+export const KPI_TEXT = "#3b2f6e";
 export const KPI_NOTE = "#3d3357";
+export const KPI_HEADLINE_FILL = "#FFC2E2";
 
-/** Compact KPI row: 2 columns on phones, up to 5 across on desktop. Subtle hover lift. */
+/** Compact KPI row: 2 columns on phones, up to 5 across on desktop. */
 export function KpiStrip({ items }: { items: Kpi[] }) {
   return (
     <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
       {items.map((k, i) => (
         <div
           key={k.label}
-          className={`flex min-w-0 flex-col gap-1 rounded-3xl border border-white/60 p-4 shadow-card transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lift motion-reduce:transform-none ${
+          className={`flex min-w-0 flex-col gap-1 overflow-hidden rounded-2xl border border-brand-line border-t-4 p-4 pt-3 shadow-card ${
             i === items.length - 1 && items.length % 2 === 1 ? "col-span-2 sm:col-span-1" : ""
           }`}
           style={{
-            background: `linear-gradient(150deg, rgba(255,255,255,0.45), rgba(255,255,255,0) 60%), ${KPI_FILLS[i % KPI_FILLS.length]}`,
+            backgroundColor: i === 0 ? KPI_HEADLINE_FILL : "#ffffff",
+            borderTopColor: i === 0 ? "#FFADC7" : KPI_ACCENTS[i % KPI_ACCENTS.length],
             color: KPI_TEXT,
           }}
         >

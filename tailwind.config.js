@@ -19,6 +19,9 @@ module.exports = {
           rose: "#FFADC7",
           cream: "#FCF6D9",
           wash: "#f4effb",
+          lilacSoft: "#e9dcff", // solid lavender for active pills (plum text 8.9:1)
+          pinkSoft: "#ffe6f1", // solid pink for hover / selected highlights (ink 14.2:1)
+          line: "#ece6f5", // hairline border on every surface
         },
         page: "#faf7fc",
       },
@@ -26,9 +29,9 @@ module.exports = {
         display: ["clamp(1.75rem, 1.2rem + 2.4vw, 2.75rem)", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
         title: ["clamp(1.375rem, 1.1rem + 1.2vw, 1.875rem)", { lineHeight: "1.2", letterSpacing: "-0.01em" }],
       },
+      // One soft, low shadow for every surface.
       boxShadow: {
-        card: "0 1px 2px rgba(125,113,167,0.08), 0 12px 32px -14px rgba(125,113,167,0.35), 0 4px 14px -8px rgba(255,173,199,0.35)",
-        lift: "0 2px 4px rgba(125,113,167,0.10), 0 18px 36px -14px rgba(125,113,167,0.45), 0 6px 18px -8px rgba(255,173,199,0.45)",
+        card: "0 1px 3px rgba(59,47,110,0.08)",
       },
     },
   },

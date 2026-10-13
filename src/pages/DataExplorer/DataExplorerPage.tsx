@@ -84,7 +84,7 @@ export default function DataExplorerPage() {
                   <XAxis type="number" ticks={r2Ticks} domain={[0, r2Ticks[r2Ticks.length - 1]]} tickFormatter={(v: number) => v.toFixed(1)} tick={AXIS_TICK} axisLine={AXIS_LINE} tickLine={false} />
                   <YAxis type="category" dataKey="division" tick={{ ...AXIS_TICK, fill: "#1f1b2e" }} axisLine={false} tickLine={false} width={24} interval={0} />
                   <Tooltip
-                    cursor={{ fill: "rgba(125,113,167,0.08)" }}
+                    cursor={{ fill: "#fdf0f6" }}
                     content={({ active, payload }) => {
                       const p = payload?.[0]?.payload as (typeof r2Data)[number] | undefined;
                       return active && p ? <TooltipBox title={`Division ${p.division}`} rows={[{ label: "R²", value: formatR2(p.r2) }, { label: "Weeks", value: String(p.rows) }]} /> : null;

@@ -16,7 +16,7 @@ interface TooltipRow {
 /** Light tooltip with near-black text; rows are pre-formatted strings. */
 export function TooltipBox({ title, rows }: { title: ReactNode; rows: TooltipRow[] }) {
   return (
-    <div className="min-w-[10rem] rounded-2xl border border-[#ead9f5] bg-white/90 px-3 py-2 text-sm shadow-card backdrop-blur">
+    <div className="min-w-[10rem] rounded-lg border border-brand-line bg-white px-3 py-2 text-sm shadow-card">
       <div className="mb-1 font-semibold text-ink">{title}</div>
       {rows.map((r) => (
         <div key={r.label} className="flex items-center justify-between gap-4">
