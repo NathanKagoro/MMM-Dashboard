@@ -21,7 +21,7 @@ export default function TopNav() {
       <header className="sticky top-0 z-30 border-b border-brand-line bg-white shadow-card">
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-2 px-4 sm:px-6">
           <NavLink to="/" aria-label="MMM Dashboard, overview" className="mr-2 flex min-h-[44px] shrink-0 items-center gap-2 font-semibold text-ink md:mr-4">
-            <span aria-hidden="true" className="grid h-7 w-7 place-items-center rounded-lg bg-brand-lilac text-xs font-bold text-brand-plum">
+            <span aria-hidden="true" className="grid h-7 w-7 place-items-center rounded-lg bg-brand-lilacSoft text-xs font-bold text-brand-plum">
               M
             </span>
             <span className="whitespace-nowrap">MMM<span className="hidden min-[380px]:inline"> Dashboard</span></span>

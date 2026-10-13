@@ -10,7 +10,7 @@ export function PageHeader({ title, lead, eyebrow }: { title: string; lead: Reac
   return (
     <header className="max-w-3xl">
       <p className="eyebrow">{eyebrow ?? `Sample media data · ${PERIOD_LABEL}`}</p>
-      <h1 className="mt-2 text-display font-extrabold text-brand-plum">{title}</h1>
+      <h1 className="mt-2 text-display font-extrabold text-ink">{title}</h1>
       <div aria-hidden="true" className="accent-bar mt-3" />
       <p className="mt-3 text-base leading-relaxed text-ink-2 sm:text-lg">{lead}</p>
     </header>
