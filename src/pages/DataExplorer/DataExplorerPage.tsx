@@ -205,7 +205,7 @@ export default function DataExplorerPage() {
           <Card
             title={
               <span className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-brand-strong" aria-hidden="true" /> To make this decision-grade
+                <Target className="h-5 w-5 text-brand-strong" aria-hidden="true" /> Before moving budget on these results
               </span>
             }
           >

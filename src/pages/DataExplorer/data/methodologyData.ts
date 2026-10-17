@@ -36,7 +36,7 @@ export const modelEquation =
   "Sales = β₀ + β₁·log(1+Google) + β₂·log(1+Email) + β₃·log(1+Facebook) + β₄·log(1+Affiliate) + β₅·log(1+Organic) + β₆·Trend + β₇·sin(week) + β₈·cos(week)";
 
 export const modelInterpretation =
-  "Each channel coefficient β is the change in weekly sales (£) per one-unit rise in log-impressions, holding the other channels, trend and seasonality fixed. Multiplying by ln 2 (≈ 0.69) gives the change if that channel's impressions doubled — the figure used on every chart.";
+  "Each channel coefficient β is the change in weekly sales (£) per one-unit rise in log-impressions, holding the other channels, trend and seasonality fixed. Multiplying by ln 2 (≈ 0.69) gives the change if that channel's impressions doubled. That is the figure used on every chart.";
 
 export const modelingLimitations = [
   {

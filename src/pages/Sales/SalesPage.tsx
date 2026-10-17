@@ -79,7 +79,7 @@ const recommendations = [
   {
     title: "Optimise Google",
     channel: "Google" as ChannelName,
-    detail: `${formatCompact(google.totalImpressions)} impressions — ${google === byVolume[0] ? "the most of any channel" : `close to ${byVolume[0].channel}'s ${formatCompact(byVolume[0].totalImpressions)}`} — but the smallest positive effect: work on targeting before adding volume.`,
+    detail: `${formatCompact(google.totalImpressions)} impressions (${google === byVolume[0] ? "the most of any channel" : `close to ${byVolume[0].channel}'s ${formatCompact(byVolume[0].totalImpressions)}`}), but the smallest positive effect. Work on targeting before adding volume.`,
   },
   {
     title: "Review Affiliate",

@@ -10,7 +10,7 @@ const sign = (n: number) => (n < 0 ? MINUS + WJ : "");
 
 /** 25000 -> "25K", 1_250_000 -> "1.3M", 950 -> "950". Uses at most one decimal and drops ".0". */
 export function formatCompact(value: number, digits = 1): string {
-  if (!Number.isFinite(value)) return "–";
+  if (!Number.isFinite(value)) return "n/a";
   const abs = Math.abs(value);
   const units: [number, string][] = [
     [1e9, "B"],
@@ -39,13 +39,13 @@ function trimZeros(s: string): string {
 
 /** Full-precision integer with thousands separators: -49046.5 -> "−49,047". */
 export function formatInteger(value: number): string {
-  if (!Number.isFinite(value)) return "–";
+  if (!Number.isFinite(value)) return "n/a";
   return `${sign(Math.round(value))}${Math.abs(Math.round(value)).toLocaleString("en-GB")}`;
 }
 
 /** £ amount. compact: "£25K"; otherwise "£25,000". Negative: "−£49,047". */
 export function formatCurrency(value: number, opts: { compact?: boolean; digits?: number } = {}): string {
-  if (!Number.isFinite(value)) return "–";
+  if (!Number.isFinite(value)) return "n/a";
   const body = opts.compact
     ? formatCompact(Math.abs(value), opts.digits ?? 1)
     : Math.abs(Math.round(value)).toLocaleString("en-GB");

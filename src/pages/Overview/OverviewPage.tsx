@@ -22,8 +22,8 @@ export default function OverviewPage() {
         title="Marketing Mix Model"
         lead={
           <>
-            Which channels move weekly sales? One regression per division, fitted on {model.period.weeks} weeks of
-            impressions and sales ({PERIOD_SHORT}).
+            How much each channel moves weekly sales, from one regression per division fitted on {model.period.weeks}{" "}
+            weeks of impressions and sales ({PERIOD_SHORT}).
           </>
         }
       />

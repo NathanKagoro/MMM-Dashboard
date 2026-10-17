@@ -1,6 +1,6 @@
 // Single source of truth for every figure in the dashboard.
 // modelOutputs.json is generated from data/raw/Sample Media Spend Data.csv by
-// scripts/derive_model_outputs.py — no number on screen is typed in by hand.
+// scripts/derive_model_outputs.py. No number on screen is typed in by hand.
 import raw from "./modelOutputs.json";
 
 export type ChannelName = "Google" | "Email" | "Facebook" | "Affiliate";
